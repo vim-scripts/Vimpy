@@ -26,33 +26,58 @@ nnoremap <leader>gf :call <SID>GotoFun()<CR>
 " Open new files in a split or buffer?
 let s:EditCmd = "e"
 
+" -- Implementation starts here - modify with care --
 let s:bufdetails = { 'module' : ['~Module', 'Enter Module Name: ', '<SID>CloseModule'], 
                         \ 'class'  : ['~Class', 'Enter Class Name: ', '<SID>CloseClass'], 
                         \ 'function'  : ['~Function', 'Enter Function: ', '<SID>CloseFun'] }
+
+au VimLeavePre * call s:WriteIndex()
+au BufWritePost *.py,*.pyx call s:UpdateIndex()
 
 python << endpython
 import vim
 import os
 import sys
 
-scriptdir = os.path.join(os.path.dirname(vim.eval('expand("<sfile>")')), 'vimpy')
+scriptdir = os.path.dirname(vim.eval('expand("<sfile>")'))
+if not scriptdir.endswith('vimpy'):
+    scriptdir = os.path.join(scriptdir, 'vimpy')
 sys.path.insert(0, scriptdir)
 import storage
+import vimpy
 import tok
 
 def _set_storage(path):
     if os.path.exists(path):
         st.init(path)
-        print 'Loaded Project with %d modules' % len(st.modules.skeys)
+        print 'Loaded %d modules which has %d classes and %d functions.' % st.counts()
     else:
         print 'Invalid Project File'
 
 st = storage.storage('')
 endpython
 
-if !exists(":PyProj")
-    command -nargs=1 -complete=file PyProj :python _set_storage(<q-args>)
+if !exists(":VimpyLoad")
+    command -nargs=1 -complete=file VimpyLoad :python _set_storage(<q-args>)
 endif
+
+if !exists(":VimpyCreate")
+    command -nargs=+ -complete=file VimpyCreate :python vimpy.start(<f-args>)
+endif
+
+fun! s:UpdateIndex()
+python << endpython
+if vim.current.buffer.name in st.paths:
+    vimpy.st = st
+    vimpy.parsefile(vim.current.buffer.name)
+endpython
+endfun
+
+fun! s:WriteIndex()
+python << endpython
+st.close()
+endpython
+endfun
 
 fun! s:GetModule(pfx)
 python << endpython

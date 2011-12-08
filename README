@@ -11,18 +11,10 @@ Goto can be used to goto any python module in the project by the token in the cu
 
 Usage
 -----
-Usage is similar to how ctags/ptags work in Vim. Basically there are 3 steps:
+Usage is similar to how ctags/ptags work in Vim. Basically there are 2 steps:
 
-1. Create the index file. The vimpy.py can be used to create the index file. See 'python vimpy.py' for usage.
-   This is a one time operation. When some files change, the index has to be re-built (it only processes the modified files).
-   In future this might be autmated, but currently this has to be manually created.
-
-2. Load the index file in Vim. This can be done using ':PyProj <file-name>' inside Vim. This can typically be done in the vimrc or through command line as well.
-
-3. Now it is ready to use! Following commands (the Keybindings can be changed in vimpy.vim) can be used to navigate to any desired module:
-   <leader> is typically the '&#039 character, but you can change it to anything (One good option is ',').
-   All of them has auto completion support, so you just need to type in few characters and press <tab>.
-
+1. Create the index file. Use :VimpyCreate <project-name> path [exclude-path] to create index. (Alternatively, the vimpy.py script can be invoked using python to create the index file. See 'python vimpy.py' for usage.) This is a one time operation. The index will be automatically updated if you edit the files using vim, otherwise this can be rerun and only the changed files will be updated.
+2. Load the index file in Vim. This can be done using ':VimpyLoad <file-name>' inside Vim. This can automated by adding in the vimrc. Now it is ready to use! Following commands (the Keybindings can be changed in vimpy.vim) can be used to navigate to any desired module:
     - <leader> om : Open Module. Go to a module with a given name. 
     - <leader> oc : Open Class. Go to a class with a given name. 
     - <leader> of : Open Function. Go to a funtion with a given name. 
@@ -30,5 +22,6 @@ Usage is similar to how ctags/ptags work in Vim. Basically there are 3 steps:
     - <leader> gc : Goto Class given by word under cursor. 
     - <leader> gf : Goto Function given by word under cursor. 
 
+All of them has auto completion support, so you just need to type in few characters and press <tab>
 See https://github.com/amitdev/vimpy for updates on this.
 
